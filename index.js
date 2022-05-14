@@ -2,6 +2,7 @@ require('dotenv').config();
 const dotenv=require('dotenv');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
+const questions = require('./assets/questions');
 
 // Connect to the employees_db
 const db = mysql.createConnection(
@@ -13,65 +14,6 @@ const db = mysql.createConnection(
     },
 );
 
-//Inquirer question array
-const categoryQuestions = [
-    {
-        type: "list",
-        message: "Please select a category to view, add, or update.",
-        name: "category",
-        choices: ["Departments","Roles","Employees","Quit"]
-    }
-];
-
-const departmentQuestions = [
-    {
-        type: "list",
-        message: "What would you like to do?",
-        name: "action",
-        choices: ["View All Departments","Add A Department"]
-    }
-];
-
-const addDepartmentQuestions = [
-    {
-        type: "input",
-        message: "What is the name of the new department?",
-        name: "name",
-        validate: (input) => {
-            if(input !== "") return true;
-            return "Please enter a department name.";
-        }
-    }
-];
-
-const roleQuestions = [
-    {
-        type: "list",
-        message: "What would you like to do?",
-        name: "action",
-        choices: ["View All Roles","Add A Role"]
-    }
-];
-const addRoleQuestions = [
-    {
-        type: "input",
-        message: "What is the title of the new role?",
-        name: "title",
-        validate: (input) => {
-            if(input !== "") return true;
-            return "Please enter a role title.";
-        }
-    },
-    {
-        type: "input",
-        message: "What is the salary for the new role?",
-        name: "salary",
-        validate: (input) => {
-            if(input !== "" && /\d/.test(input)) return true;
-            return "Please enter a numeric salary.";
-        }
-    }
-];
 
 // View the data on a table with the table name passed in
 const viewAllTable = (table) => {
@@ -175,19 +117,20 @@ const addRole = () => {
     })
 }
 
-// Ask the user what category of data they want to work with
-const askForCategory = () => {
+//the user for what action they want to take with roles
+const AskForRoleAction = () => {
     inquirer
-        .prompt(categoryQuestions)
-        .then((categoryAnswer) => {
+        .prompt(roleQuestions)
+        .then((roleAnswer) => {
 
-            switch(categoryAnswer.category) {
+            switch(roleAnswer.action) {
 
-                case "Departments":
-                    return AskForDepartmentAction();
-                    case "Quit":
-                        return process.exit();
-                }
-            });
-    }
-    askForCategory();
+                case "View All Roles":
+                    return viewAllTable('role');
+
+                case "Add A Role":
+                    return addRole();
+            }
+});
+
+}
