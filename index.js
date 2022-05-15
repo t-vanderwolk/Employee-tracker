@@ -2,7 +2,7 @@ require('dotenv').config();
 const dotenv=require('dotenv');
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
-const questions = require('./assets/questions');
+const questions = require('./assets/questions.js');
 
 // Connect to the employees_db
 const db = mysql.createConnection(
@@ -14,6 +14,8 @@ const db = mysql.createConnection(
     },
 );
 
+// Turn database queries into a promise
+db.query = util.promisify( db.query );
 
 // View the data on a table with the table name passed in
 const viewAllTable = (table) => {
@@ -33,7 +35,7 @@ const viewAllTable = (table) => {
 // Add a department to database
 const addDepartment = () => {
     inquirer
-        .prompt(addDepartmentQuestions)
+        .prompt(questions.addDepartment)
         .then((addDepartmentAnswer) => {
 
             const deptName = addDepartmentAnswer.name;
@@ -111,11 +113,28 @@ const addRole = () => {
                         console.log(`Added ${title} to the database.`);
 
                         return askForCategory();
-                    });    
-                })
-            });
-    })
-}
+                      
+               
+            
+});
+
+const addDepartment = () => {
+    inquirer
+       
+        .prompt(questions.addDepartment)
+        .then((addDepartmentAnswer) => {
+
+            const deptName = addDepartmentAnswer.name;
+const addDepartment = () => {
+
+                if (err) console.log(err);
+
+                console.log(`Added ${deptName} to the database.`);
+                console.log('\x1b[32m', `Added ${deptName} to the database.`, '\x1b[0m');
+
+                return askForCategory();
+        
+        };
 
 //the user for what action they want to take with roles
 const AskForRoleAction = () => {
@@ -130,7 +149,4 @@ const AskForRoleAction = () => {
 
                 case "Add A Role":
                     return addRole();
-            }
-});
-
-}
+            
